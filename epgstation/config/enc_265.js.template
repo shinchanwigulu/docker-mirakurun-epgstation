@@ -35,6 +35,8 @@ const getDuration = filePath => {
 
 // 字幕用
 Array.prototype.push.apply(args, ['-fix_sub_duration']);
+// シーク設定
+Array.prototype.push.apply(args, ['-ss', '5']);
 // input 設定
 Array.prototype.push.apply(args, ['-i', input]);
 
@@ -45,27 +47,35 @@ Array.prototype.push.apply(args, ['-vf', 'yadif']);
 // 品質設定
 Array.prototype.push.apply(args, ['-preset', 'medium', '-crf', '24', '-pix_fmt', 'yuv422p10le']);
 
-// 二か国語放送対応
-if (name.indexOf('[二]') != -1) {
+// 複数音声放送対応（二か国語、音声多重、音声解説）
+if (name.indexOf('[二]') != -1 || name.indexOf('[多]') != -1 || name.indexOf('[解]') != -1) {
     if (isDualMono) {
         Array.prototype.push.apply(args, [
             '-filter_complex',
             'channelsplit[FL][FR]',
             '-map', '[FL]',
-            '-map', '[FR]',
+            '-map', '[FR]'
+        ]);
+    } else {
+        Array.prototype.push.apply(args, [
+            '-map', '0:a:0',
+            '-map', '0:a:1'
+        ]);
+    }
+
+    if (name.indexOf('[二]') != -1) {
+        Array.prototype.push.apply(args, [
             '-metadata:s:a:0', 'language=jpn',
             '-metadata:s:a:1', 'language=eng'
         ]);
     } else {
         Array.prototype.push.apply(args, [
-            '-map', '0:a:0',
-            '-map', '0:a:1',
             '-metadata:s:a:0', 'language=jpn',
-            '-metadata:s:a:1', 'language=eng'
+            '-metadata:s:a:1', 'language=jpn'
         ]);
     }
 } else {
-    Array.prototype.push.apply(args, ['-map', '0:a']);
+    Array.prototype.push.apply(args, ['-map', '0:a:0']);
 }
 // 音声ストリーム設定
 Array.prototype.push.apply(args, ['-c:a', 'aac', '-ar', '48000', '-b:a', '192k', '-ac', '2']);
