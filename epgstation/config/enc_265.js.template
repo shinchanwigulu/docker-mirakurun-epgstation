@@ -150,7 +150,6 @@ Array.prototype.push.apply(args, ['-f', 'matroska', output]);
 
                 let current = 0;
                 const times = progress.time.split(':');
-                const times = progress.time.split(':');
                 for (let i = 0; i < times.length; i++) {
                     if (i == 0) {
                         current += parseFloat(times[i]) * 3600;
